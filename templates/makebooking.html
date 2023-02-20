@@ -1,0 +1,93 @@
+{% set curr_page = 'Bookings' %}
+{% set curr_dropdown_item = 'Make a Booking' %}
+
+{%-extends "base.html" %}
+
+{% block styles %}
+<!-- bootstrap datepicker -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/sales.css') }}">
+
+<!-- jquery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<!--jquery datepicker-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+{% endblock %}
+
+{% block title %}Make a Booking{% endblock %}
+
+{% block content %}
+<h1 class="mainheader">Make a Booking</h1>
+
+{% if avaliable %}
+<form method="get" class="row g-5 mb-4">
+    <div class="col-md border-md-end">
+        <div class="mb-5">
+            <label for="type" class="form-label">Booking Type</label><br>
+            <select id="type" class="form-select" aria-describedby="typeerror" required>
+                <option selected disabled>Select</option>
+                <option>Guided Tour</option>
+                <option disabled>Workshop</option>
+            </select>
+            <div id="typeerror" class="invalid-feedback">
+                Invalid type
+            </div>
+        </div>
+        <div>
+            <label for="date" class="form-label">Date</label><br>
+            <input type="text" class="form-control" id="date" placeholder="YYYY-MM-DD" list="availdates"
+                   aria-describedby="availdates datepicker dateerror" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" required>
+            <datalist id="availdates">
+                {% for date in avaliable %}
+                <option value="{{date}}">
+                {% endfor %}
+            </datalist>
+            <div id="datepicker" class="border border-1 rounded bg-black bg-opacity-75"></div>
+            <script type="text/javascript">
+                const calender = $('#datepicker')
+                calender.datepicker({
+                   startDate: '{{ datepicker.startDate }}',
+                   endDate: '{{ datepicker.endDate }}',
+                   datesDisabled: {{ datepicker.datesDisabled|tojson }},
+                   todayHighlight: 'true',
+                   format: "yyyy-mm-dd",
+                });
+            </script>
+            <div id="dateerror" class="invalid-feedback">
+                Invalid date, please pick or enter an avaliable date in the YYYY-MM-DD format
+            </div>
+        </div>
+    </div>
+    <div class="col-md d-flex flex-column justify-content-between gap-4">
+        <div>
+            <h4>Avaliable Time Slots</h4>
+            <div class="invalid-feedback" id="slot-error"
+                 {% if 'slot' in errors %}style="display:initial;"{% endif %}>
+                {{ errors['slot']|default('Please pick a timeslot') }}
+            </div>
+        </div>
+        {% for date, slots in avaliable.items() %}
+        <fieldset id="{{date}}" class="flex-grow-1 gap-2 timeslots" hidden>
+            {% for time, pax in slots.items() %}
+            <input type="radio" id="{{date}}.{{time[0]}}_{{time[1]}}" class="btn-check" name="slot"
+                   value="{{date}}.{{time[0]}}_{{time[1]}}" required>
+            <label for="{{date}}.{{time[0]}}_{{time[1]}}" class="btn btn-outline-primary">
+                {{"{:%I:%M %p} - {:%I:%M %p}".format(*time)}}
+            </label>
+            {% endfor %}
+        </fieldset>
+        {% endfor %}
+        <input type="submit" class="btn btn-success align-self-end" id="booknow" value="Book Now >"
+               aria-disabled="true" data-bs-toggle="tooltip" title="Please select a time slot">
+    </div>
+</form>
+<script>
+	const availdates = {{ avaliable.keys()|list|tojson }}
+</script>
+<script src="{{ url_for('static',filename='script/validate.js') }}"></script>
+<script src="{{ url_for('static',filename='script/makebooking.js') }}"></script>
+{% else %}
+<h5>Sorry, we have no slots available</h5>
+{% endif %}
+{% endblock %}

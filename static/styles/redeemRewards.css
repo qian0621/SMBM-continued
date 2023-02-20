@@ -1,0 +1,101 @@
+div.rewardsMain {
+    display: flex;
+}
+
+table.desc tr {
+    margin: 1rem;
+}
+
+table.desc tr td ul li {
+    font-size: 1rem;
+}
+
+.customerInfo p {
+    padding-left: 6rem;
+}
+
+.customerInfo p:nth-child(1) {
+    font-size: 2.1rem;
+}
+
+.customerInfo p:nth-child(2) {
+    font-size: 2.1rem;
+}
+
+div.header {
+    display:flex;
+    flex-direction: column;
+    align-content: center;
+    text-align: center;
+    background-color: #e2e2e2;
+    border-radius: 25px;
+    color: black;
+    padding: 0 .5rem;
+    font-size: .8rem;
+    margin: 1rem;
+}
+
+img {
+    width: 12rem;
+    border-radius: 1rem;
+}
+
+li {
+    list-style-type: none;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    flex-basis: 2;
+}
+
+#reward {
+    width: 23rem;
+    height: 3.3rem;
+    border-radius: 7px;
+    font-size: .9rem;
+}
+
+#reward option {
+    color: black;
+}
+
+option:hover {
+    background-color: black;
+}
+
+#rewardSubmit {
+    border-radius: .4rem;
+    color: white;
+    background-color: cornflowerblue;
+    margin: 10.5rem 0 1rem;
+    padding: .4rem .9rem;
+    width: 5rem !important;
+    border: 2px solid lightskyblue;
+
+}
+
+div.rewards form label {
+    font-size: 1.2rem;
+}
+
+.earnRewards {
+    background-color: lightgray;
+    margin-top: 1rem;
+    padding: 1rem;
+    width: 18rem !important;
+    color: black;
+}
+
+@media all  and (min-width:993px) {
+
+}
+@media (max-width:992px) {
+
+}
+
+option {
+    display:none;
+}

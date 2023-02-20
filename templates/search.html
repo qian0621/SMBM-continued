@@ -1,0 +1,82 @@
+{% set navtype = 'staff' %}
+{% set curr_page = 'Search Accounts' %}
+{% extends "base.html" %}
+
+{% block title %}Search{% endblock %}
+{% block styles %}
+<style>
+    #searchBar {
+        width: 95%
+    }
+
+    #searchBtn {
+        margin-left: 8px;
+        color: white;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="main">
+    <form onsubmit="customerPath()">
+        <input type="text" name="searchBar" id="searchBar" placeholder="User Name Search" title="User Name Search">
+        <button type="button" class="btn btn-outline-primary" id="searchBtn"><svg xmlns="http://www.w3.org/2000/svg"
+                width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path
+                    d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+            </svg>
+        </button>
+    </form>
+    <h5 style="color:red;font-weight:bold;text-align: center;">{{message}}</h5>
+    {% if search %}
+    <table class="table" style="margin-bottom:0;">
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{{user.role}} ID</td>
+            <td>{{user.id}}</td>
+        </tr>
+        <tr>
+            <td>{{user.role}} Name</td>
+            <td>{{user.name}}</td>
+        </tr>
+        <tr>
+            <td>{{user.role}} Email</td>
+            <td>{{user.email}}</td>
+        </tr>
+        {% if user.role=='Customer' %}
+        <tr>
+            <td>Current Points</td>
+            <td>{{user.current_points}}</td>
+        </tr>
+        <tr>
+            <td>Used Points</td>
+            <td>{{user.used_points}}</td>
+        </tr>
+        {% endif %}
+    </table>
+    {% if rewardLoop != [] %}
+    <table class="table">
+        <tr>
+            <td colspan="2">Rewards</td>
+            <td>Redemption Date</td>
+            <td>Has Used</td>
+        </tr>
+        {% for count in rewardLoop %}
+        <tr>
+            <td colspan="2">{{user.rewards[count]['voucher']}}</td>
+            <td>{{user.rewards[count]['redeemDate']}}</td>
+            <td>{{user.rewards[count]['used']}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% elif user.role=='Customer' %}
+    <h1 style="color:red;font-weight:bold;text-align: center;">This customer has no current & past rewards!</h1>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static',filename='script/search.js') }}"></script>
+{% endblock %}

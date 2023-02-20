@@ -1,0 +1,9 @@
+{% set curr_page = 'Home' %}
+{% extends "base.html" %}
+
+{% block title %}{{ e.code }} {{ e.name }}{% endblock %}
+
+{% block content %}
+<h1>{{ e.code }} {{ e.name }}</h1>
+<p>{{ e.description }}</p>
+{% endblock %}

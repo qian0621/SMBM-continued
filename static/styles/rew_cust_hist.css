@@ -1,0 +1,24 @@
+body {
+    background-image: url('../img/background.jpeg');
+    background-size: cover;
+    color: white;
+}
+
+.nav-item:last-child {
+    margin: 0 3rem;
+}
+
+.nav-item {
+    margin: 0 .45rem;
+}
+
+div.main {
+    margin: 1rem;
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 15px;
+}
+
+.customerInfo p {
+    padding-left: 6rem;font-size: 3.1rem;
+}

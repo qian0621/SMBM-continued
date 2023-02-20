@@ -1,0 +1,171 @@
+{% set navtype = 'staff' %}
+{% set curr_page = 'Manage Bookings' %}
+
+{% extends "base.html" %}
+
+{% block title %}Slots{% endblock %}
+
+{% block styles %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<link rel="stylesheet"
+      href="static/styles/product.css">
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid">
+<h1 class="display-4">Slots</h1>
+    </div>
+<div class="floating-btn">
+    <a href="createSlot" class="btn btn-dark" id="float">
+<i class="fa fa-plus my-float"></i>
+        <p>Add</p>
+</a>
+ </div>
+<div>
+<div>
+  <table class="table">
+    <thead>
+      <tr class="table-dark">
+        <th scope="col">Date</th>
+        <th scope="col">Adult ($)</th>
+        <th scope="col">Concession ($)</th>
+        <th scope="col">Child ($)</th>
+          <th scope="col">10AM slot</th>
+          <th scope="col">11AM slot</th>
+          <th scope="col">2PM slot</th>
+          <th scope="col">3PM slot</th>
+          <th scope="col">4PM slot</th>
+          <th colspan="3">
+              <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#clearModal">Clear All Slots</button>
+              <div class="modal fade" id="clearModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+
+              <!-- Modal Header -->
+              <div class="modal-header">
+                <h4 class="modal-title">Clear Slots Confirmation</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <!-- Modal body -->
+              <div class="modal-body">
+                  Are you sure you want to clear ALL slots?
+              </div>
+
+              <!-- Modal footer -->
+              <div class="modal-footer">
+                  <form action="{{url_for('clearSlots', date=date)}}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <input type="submit" value="Clear"  class="btn btn-outline-danger">
+               </form>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
+
+          </th>
+          <th></th>
+          <th></th>
+          <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% if slots_list|length > 0 %}
+    {% for date, item in slots_list.items() %}
+     <tr>
+
+        <td>{{ date }}</td>
+        <td>{{ item.getAdultPrice() }}</td>
+        <td>{{ item.getConcessionPrice() }}</td>
+        <td>{{ item.getChildPrice() }}</td>
+         <td>{{ item.getAvailability(0) }}</td>
+         <td>{{ item.getAvailability(1) }}</td>
+         <td>{{ item.getAvailability(2) }}</td>
+        <td>{{ item.getAvailability(3) }}</td>
+         <td>{{ item.getAvailability(4) }}</td>
+        <td><a href="/updateSlot/{{date}}" class="btn btn-outline-warning"><i class="fi fi-br-pencil"></i></a></td>
+        <td>
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#myModal"><i class="fi fi-sr-trash"></i></button>
+
+
+        <!-- The Modal -->
+        <div class="modal fade" id="myModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+
+              <!-- Modal Header -->
+              <div class="modal-header">
+                <h4 class="modal-title">Delete Confirmation</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <!-- Modal body -->
+              <div class="modal-body">
+                  Are you sure you want to delete {{ date }}?
+              </div>
+
+              <!-- Modal footer -->
+              <div class="modal-footer">
+                  <form action="{{url_for('deleteSlot', date=date)}}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                      <input type="submit" value="Delete"  class="btn btn-danger">
+               </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+              </div>
+            </div>
+          </div>
+        </div>
+            </form>
+        </td>
+              <td>
+            <form action="{{url_for('makeAllAvailable', date=date)}}" method="POST">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <input type="submit"  value="Make All Available" class="btn btn-success">
+            </form>
+        </td>
+              <td>
+            <form action="{{url_for('makeAllUnavailable', date=date)}}" method="POST">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <input type="submit"  value="Make All Unavailable" class="btn btn-danger">
+            </form>
+        </td>
+
+
+
+
+</div>
+
+
+
+</div>
+  </div>
+</div>
+          </form>
+        </td>
+     </tr>
+    {% endfor %}
+{% else -%}
+<td colspan="5"><h3>There are no slots.</h3></td>
+{% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+  {% block scripts %}
+    <script>function myFunction() {
+  let text;
+  if (confirm("Are you sure?") == true) {
+    text = "You pressed OK!";
+  } else {
+    text = "You cancelled!";
+  }
+  document.getElementById("demo").innerHTML = text;
+}}
+
+
+    </script>
+  {% endblock %}

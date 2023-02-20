@@ -1,0 +1,43 @@
+{% set curr_page = 'Home' %}
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block styles %}
+<style>
+    body {
+        height: 100vh;
+    }
+
+    main {
+        height: calc(100% - 3.5rem)
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="homebk" class="h-100 px-6 d-flex flex-column justify-content-center">
+    <div id="hometx" class="mb-5">
+        {%-if 'userInfo' in session %}
+        <h1>Welcome Back, {{ session['userInfo'].name }}</h1>
+        <span>What would you like to do today?</span>
+    </div>
+    {%-if session['userInfo'].role == 'Staff' %}
+    <a href="{{url_for('allbookings')}}" class="btn btn-primary btn-lg mb-2">Manage Bookings</a>
+    <a href="/manageCustomers" class="btn btn-primary btn-lg">Manage Customers</a>
+    {%-else %}
+    <a href="{{url_for('makebooking')}}" class="btn btn-primary btn-lg">Make A Booking</a>
+    {%-endif %}
+        {%-else %}
+        <h1>
+            Rediscover A Hidden Passion, <br>
+            Renew A History of Music
+        </h1>
+    </div>
+    <a href="{{url_for('makebooking')}}" class="btn btn-primary btn-lg">Make A Booking Today</a>
+    {%-endif %}
+</div>
+<!--{% if message %}-->
+<!--  <h3>{{ message }}</h3>-->
+<!--{% endif %}-->
+{% endblock %}

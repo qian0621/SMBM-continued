@@ -1,0 +1,24 @@
+{% set navtype = 'public' %}
+{% set curr_page = 'Login' %}
+
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+<h1>Login</h1>
+<form action="/login" method="post">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+	<label for="name" class="form-label">Name</label>
+	<input type="text" class="form-control" id="name" name="name" required><br>
+	<label for="password" class="form-label">Password</label>
+	<input type="password" class="form-control" id="password" name="password" required>
+	<h5 style="color:red;font-weight:bold;text-align: left;">{{message}}</h5>
+	<button type="submit" class="btn btn-primary" style="margin-top:30px;">Submit</button>
+	<a href="/resetPassword">
+		<p style="margin-top:20px;">Reset Password</p>
+	</a>
+</form>
+{% endblock %}

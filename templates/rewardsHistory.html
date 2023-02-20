@@ -1,0 +1,40 @@
+{% set curr_page = 'My Rewards' %}
+{% set curr_dropdown_item = 'Rewards History'-%}
+{% extends "base.html" %}
+{% block title %}Rewards History{% endblock %}
+{% block content %}
+<div class="main">
+    <div class="container">
+        <div class="rewardsMain">
+            {% if rewardLoop != [] %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Voucher Name</th>
+                        <th>Redeem Date</th>
+                        <th>Voucher Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reward in rewards %}
+                    <tr>
+                        <td>{{reward.id}}</td>
+                        <td class="voucherName">{{reward.voucher}}</td>
+                        <td>{{reward.date}}</td>
+                        {% if reward.used %}
+                        <td style="color:red;font-weight: bold;">Used</td>
+                        {% else %}
+                        <td style="color:green;font-weight: bold;">Unused</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                 </tbody>
+            </table>
+            {% else %}
+            <h1>You do not have any rewards.</h1>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

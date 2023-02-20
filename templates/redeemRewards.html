@@ -1,0 +1,86 @@
+{% set curr_page = 'My Rewards' %}
+{% set curr_dropdown_item = 'Redeem Rewards'-%}
+{% extends "base.html" %}
+{% block title %}Customer Redeem Rewards Page{% endblock %}
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/redeemRewards.css') }}">{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="customerInfo">
+        <p>Welcome Back, {{customer.name}}</p>
+        <p id="custPoints">Current Points: {{customer.current_points}}</p>
+    </div>
+    <div class="rewardsMain">
+        <table class="desc">
+            <tr>
+                <td>
+                    <div class="header">Cafe</div>
+                </td>
+                <td><img src="./static/img/cafe.jpeg" alt="Cafe"></td>
+                <td>
+                    <ul>
+                        <li>5 Points = $1 off any dish in café</li>
+                        <li>9 Points = $2 off any dish in café</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="header">Guided Tours</div>
+                </td>
+                <td><img src="./static/img/Guided tour.jpeg" alt="Tours"></td>
+                <td>
+                    <ul>
+                        <li>15 Points = 10% off for guided tour</li>
+                        <li>25 Points = 20% off for guided tour</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="header">Workshops</div>
+                </td>
+                <td><img src="./static/img/workshop.jpeg" alt="Workshop"></td>
+                <td>
+                    <ul>
+                        <li>17 Points = 10% off for workshop</li>
+                        <li>30 Points = 20% off for workshop</li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+        <div class="rewards">
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label for="reward">Claim Reward:</label>
+                <select id="reward" name="reward" ondragover="disableRewards()">
+                    <option value="" selected>Please Select</option>
+                    {% for RewardType in reward.__subclasses__() %}
+                     <option value="{{ RewardType.voucher }}" id="{{ RewardType.points }}points">
+                         {{ RewardType.points }} Points = {{ RewardType.voucher }}
+                     </option>
+                    {% endfor %}
+                    <option value="" disabled id="notEnoughPoints" style="color:red;font-weight:bold;">You do not have enough points to redeem any rewards</option>
+                </select>
+                <button type="submit" id="rewardSubmit">Submit</button>
+            </form>
+            <div class="earnRewards">
+                <ul>
+                    <li>Account Creation = 2 points</li>
+                    <li>1x Tour = 3 points</li>
+                    <li>1x Workshop = 8 points</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+   let pointsList = [];
+   {% for RewardType in reward.__subclasses__() %}
+   pointsList.push({{RewardType.points}})
+   {% endfor %}
+</script>
+<script src="{{ url_for('static',filename='script/rewards.js') }}"></script>
+{% endblock %}

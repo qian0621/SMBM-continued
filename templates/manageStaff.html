@@ -1,0 +1,36 @@
+{% set curr_page = 'Manage Staff' %}
+{% set curr_dropdown_item = 'Manage Staff'-%}
+{% extends "base.html" %}
+{% block title %}Manage Staff{% endblock %}
+{% block content %}
+<div class="main">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <table class="table">
+        <thead>
+            <td></td>
+            <td>ID</td>
+            <td>Staff Name</td>
+            <td>Staff Email</td>
+            <td>More Details</td>
+        </thead>
+        <tbody class="data">
+            {% for name in staffs %}
+            {% if staffs[name].role == 'Staff' %}
+            <tr>
+                <td></td>
+                <td>{{staffs[name].id}}</td>
+                <td>{{staffs[name].name}}</td>
+                <td>{{staffs[name].email}}</td>
+                <td></td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+{% block scripts %}
+<!-- Gives staff a link for more details about staff account -->
+<script>for (const child of document.getElementsByClassName('data')[0].children) child.children[4].innerHTML = `<a href="${window.location.origin}/search/${child.children[2].textContent}" style="color:var(--bs-table-color);text-decoration:none;font-weight:bold;" title="Click for more details.">${child.children[2].textContent} details</a>`</script>
+{% endblock %}

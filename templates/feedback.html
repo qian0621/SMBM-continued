@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Create Feedback{% endblock %}
+
+{% block content %}
+
+<h1 class="display-5">Feedback Form</h1>
+
+
+<form method="POST" action=''>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <fieldset>
+    <div class="mb-3">
+      <label for="disabledTextInput" class="form-label">Name</label>
+      <input type="text" id="name" value="{{name}}"  class="form-control {{nei}}" name="name">
+      <div class='text-danger'>{{name_error}}</div>
+    </div>
+    <div class="mb-3">
+      <label for="disabledTextInput" class="form-label">Email</label>
+      <input type="text" id="email" value="{{email}}" class="form-control {{eei}}" name="email">
+      <div class='text-danger'>{{email_error}}</div>
+    </div>
+    <div class="mb-3">
+      <label for="disabledTextInput" class="form-label">Feedback</label>
+      <div class="form-floating is-invalid">
+        <textarea class="form-control {{fei}}" id="feedback" placeholder="Leave a feedback here" name="feedback">{{feedback}}</textarea>
+        <label for="feedback">Leave a feedback here</label>
+      </div>
+      <div class='text-danger'>{{feedback_error}}</div>
+    </div>
+    
+    <input type="submit" value="Submit" class="btn btn-primary"/>
+  </fieldset>
+
+
+  
+</form>
+{% endblock %}

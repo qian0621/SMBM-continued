@@ -1,0 +1,46 @@
+{% set curr_page='Register' %}
+{% set curr_dropdown_item = 'Customer Registration'-%}
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block styles %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/errorvalidation.css') }}">
+{% endblock %}
+{% block content %}
+<h1>Customer Registration</h1>
+<form action="/register/customer" method="post">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+	<label for="name" class="form-label">Name</label>
+	<input type="text" class="form-control" id="name" name="name" required><br>
+	<label for="email" class="form-label">Email</label>
+	<input type="email" class="form-control" id="email" name="email" aria-describedby="email">
+	<div class="form-text">We'll never share your email with anyone else.</div>
+	<label for="password" class="form-label">Password</label>
+	<input type="password" class="form-control" id="password" name="password">
+	<div class="form-text">Space characters are not allowed. Password character length is 8-15. Can use alphabets, numbers and special characters.</div>
+	<div id="password-error" class="error"></div>
+	<button type="submit" class="btn btn-primary" style="margin-top:15px">Submit</button>
+	<div id="email-error" class="error"></div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+	document.querySelector('#password').addEventListener('input', function(event) {
+		var password = event.target.value;
+		var isValid = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,15}$/.test(password);
+		validate(this, isValid);
+	});
+
+  document.querySelector('form').addEventListener('submit', function(event) {
+    var password = document.querySelector('#password').value;
+    var isValid = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,15}$/.test(password);
+
+    if (!isValid) {
+      event.preventDefault();
+      document.querySelector('#password-error').innerHTML = 'Password is invalid, it must be 8-15 characters long and contain only alphanumeric characters and symbols';
+    }
+  });
+</script>
+<script src="{{ url_for('static',filename='script/validate.js') }}"></script>
+{% endblock %}

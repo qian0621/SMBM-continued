@@ -1,0 +1,51 @@
+#float{
+	position:fixed;
+	width:80px;
+	height:80px;
+	bottom:40px;
+	right:130px;
+	background-color: #212529;
+	color:#FFF;
+	border-radius:50px;
+	text-align:center;
+	box-shadow: 0px 0px 30px 10px black;
+	text-decoration: none;
+	margin: auto
+    }
+
+#float:hover {
+	box-shadow: 0px 0px 10px 5px white;
+    }
+
+
+.my-float{
+	margin-top:22px;
+    }
+
+.container-fluid {
+    background-color: #212529;
+    color: white
+    }
+
+.table{
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    color:white
+    }
+
+#myModal {
+    color: white
+    }
+
+.btn{
+    border-radius: 5px;
+    border-width: 1.5px;
+    transition: 0.3s;
+    }
+
+
+.inline {
+    display: inline;
+    }

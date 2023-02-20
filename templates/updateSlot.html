@@ -1,0 +1,67 @@
+{% set navtype = 'staff' %}
+{% set curr_page = 'Manage Bookings' %}
+
+
+{% extends "base.html" %}
+
+
+{% block title %}Update Slot{% endblock %}
+
+{% block styles %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<link rel="stylesheet"
+      href="static/styles/product.css">
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+{% endblock %}
+
+{% block content %}
+{% from "includes/formHelper.html" import render_field %}
+
+<h1 class="display-4">Update Slot</h1>
+
+<form method="POST" >
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="inline">
+      <h3>Prices</h3>
+
+       <div class="form-group">
+    {{ render_field(form.adultPrice, class="form-check", style="list-style-type:none") }}
+  </div>
+  <div class="form-group">
+    {{ render_field(form.concessionPrice, class="form-check", style="list-style-type:none") }}
+  </div>
+
+         <div class="form-group">
+    {{ render_field(form.childPrice, class="form-check", style="list-style-type:none") }}
+  </div>
+    </div>
+
+    <div class="inline">
+
+      <h3>Availability</h3>
+
+          <div class="form-group">
+    {{ render_field(form.availability1, class="form-check", style="list-style-type:none") }}
+  </div>
+
+          <div class="form-group">
+    {{ render_field(form.availability2, class="form-check", style="list-style-type:none") }}
+  </div>
+
+          <div class="form-group">
+    {{ render_field(form.availability3, class="form-check", style="list-style-type:none") }}
+  </div>
+          <div class="form-group">
+    {{ render_field(form.availability4, class="form-check", style="list-style-type:none") }}
+  </div>
+
+          <div class="form-group">
+    {{ render_field(form.availability5, class="form-check", style="list-style-type:none") }}
+  </div>
+
+    <button href="viewSlots" class="btn btn-secondary" onclick="history.back()">Back</button>
+  <input type="submit" value="Submit" class="btn btn-primary"/>
+    </div>
+</form>
+{% endblock %}

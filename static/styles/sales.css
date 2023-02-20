@@ -1,0 +1,164 @@
+.scrolltable {
+	overflow-y: scroll;
+	flex: 1 1 auto;
+}
+
+.table-responsive {
+	overflow-y: scroll;
+}
+
+.scrolltable table thead {
+	position: sticky;
+	top: 0;
+}
+
+.scrolltable table thead {
+	position: sticky;
+	bottom: 0;
+}
+
+table#cart {
+	table-layout: fixed;
+}
+
+/*
+table#cart tr > td:has(input, button) {
+	padding: 0;
+}
+
+
+input[type="number"] {
+	-webkit-appearance: textfield;
+	-moz-appearance: textfield;
+	appearance: textfield;
+}
+*/
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+}
+
+.mainheader {
+	margin-top: 0.4em;
+	border-bottom: 1px solid grey;
+	margin-bottom: 1em;
+}
+
+.price {
+	color: red;
+}
+
+.timeslots:not([hidden]) {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+}
+
+.timeslots:not([hidden]) > label:not(:last-child) {
+	display: block;
+}
+
+div#filters > div.row > div {
+	width: 20rem;
+}
+
+/*
+.g-large>* {
+	box-sizing: border-box;
+	padding-left: 5vw;
+	padding-right: 5vw;
+	padding-bottom: 5vh;
+}
+
+.g-large {
+	margin-right: -5vw;
+	margin-left: -5vw;
+	margin-bottom: -5vh;
+}
+*/
+/*md*/
+@media (min-width: 768px) {
+	.border-md-end {
+		border-right: 1px solid DimGrey;
+	}
+}
+
+/*lg*/
+@media (min-width: 992px) {
+	.border-lg-end {
+		border-right: 1px solid DimGrey;
+	}
+}
+
+.datepicker-inline {
+	width: auto;
+}
+
+.datepicker-inline table {
+	width: 100%;
+}
+/*
+.datepicker table tr td {
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+*/
+.datepicker table tr td,
+.datepicker .datepicker-switch,
+.datepicker .next,
+.datepicker .prev,
+.datepicker tfoot tr th,
+.datepicker .datepicker-switch,
+.datepicker .next,
+.datepicker .prev,
+.datepicker tfoot tr th,
+.datepicker table tr td span,
+.datepicker table tr td span {
+    color: white;
+}
+
+.datepicker table tr td.new, .datepicker table tr td.old {
+	color: #e9ecef;
+}
+
+.datepicker table tr td:hover,
+.datepicker .datepicker-switch:hover,
+.datepicker .next:hover,
+.datepicker .prev:hover,
+.datepicker tfoot tr th:hover,
+.datepicker .datepicker-switch:hover,
+.datepicker .next:hover,
+.datepicker .prev:hover,
+.datepicker tfoot tr th:hover,
+.datepicker table tr td span.focused,
+.datepicker table tr td span:hover,
+.datepicker table tr td.today {
+    color: black;
+}
+
+.disabled,
+[aria-disabled="true"],
+.btn[aria-disabled="true"]:hover {
+	color: var(--bs-btn-disabled-color);;
+	background-color: var(--bs-btn-disabled-bg);
+	border-color: var(--bs-btn-disabled-border-color);
+	opacity: var(--bs-btn-disabled-opacity);
+	cursor: not-allowed !important;
+}
+
+.datepicker table tr td.disabled,
+.datepicker table tr td.disabled:hover,
+.datepicker table tr td.today.disabled,
+.datepicker table tr td.today.disabled:hover  {
+	color: #343a40;
+}
+
+.datepicker table tr td.today.disabled,
+.datepicker table tr td.today.disabled:hover {
+	color: #6c757d;
+}
+
+.datepicker table tr td span.disabled.focused,
+.datepicker table tr td.today.active {
+	color: white;
+}

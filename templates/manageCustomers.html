@@ -1,0 +1,35 @@
+{%set curr_page='Manage Customers'%}
+{% set curr_dropdown_item = 'Manage Customers'-%}
+{%extends"base.html"%}
+{%block title%}Manage Customers{%endblock%}
+{%block content%}
+<!-- Navbar --><!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark"><div class="container-fluid"><a class="navbar-brand" href="#"><table class="brand"><tr class="brand"><td class="brand">SM<br>BM</td><td class="brand">Singapore<br>Musical<br>Box<br>Museum</td></tr></table></a><button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="main_nav"><ul class="navbar-nav ms-auto"><li class="nav-item"><a class="nav-link" href="#">Home</a></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Manage Bookings</a><ul class="dropdown-menu dropdown-menu-right"><li><a class="dropdown-item" href="#">Customer Bookings</a></li><li><a class="dropdown-item" href="#">Change Price</a></li><li><a class="dropdown-item" href="#">Change Availability</a></li></ul></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Manage Customers</a><ul class="dropdown-menu dropdown-menu-right"><li><a class="dropdown-item" href="#">View Accounts</a></li><li><a class="dropdown-item" href="#">Change Price</a></li><li><a class="dropdown-item" href="#">Customer Support</a></li></ul></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Manage Staff</a><ul class="dropdown-menu dropdown-menu-right"><li><a class="dropdown-item" href="#">View Staff Accounts</a></li><li><a class="dropdown-item" href="#">Create Staff Account</a></li></ul></li><li class="nav-item"><a class="nav-link" href="#">Logout</a></li></ul></div></div></nav> -->
+<div class="main">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <table class="table">
+        <thead>
+            <td></td>
+            <td>ID</td>
+            <td>Customer Name</td>
+            <td>Current Points</td>
+            <td>Used Points</td>
+            <td>Reward List</td>
+        </thead>
+        <tbody class="data">
+            {%for name in customers%}
+            {%if customers[name].role == 'Customer'%}
+            <tr>
+                <td></td>
+                <td>{{customers[name].id}}</td>
+                <td>{{customers[name].name}}</td>
+                <td>{{customers[name].current_points}}</td>
+                <td>{{customers[name].used_points}}</td>
+                <td></td>
+            </tr>
+            {%endif%}
+            {%endfor%}
+        </tbody>
+    </table>
+</div>{%endblock%}{%block scripts%}<!-- Gives staff a link for more details about customer account -->
+<script>for (const child of document.getElementsByClassName('data')[0].children) child.children[5].innerHTML = `<a href="${window.location.origin}/search/${child.children[2].textContent}" style="color:var(--bs-table-color);text-decoration:none;font-weight:bold;" title="Click for more details.">${child.children[2].textContent}'s rewards</a>`</script>
+{%endblock%}

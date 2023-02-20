@@ -1,0 +1,127 @@
+{% set curr_dropdown_item = 'Make a Booking'-%}
+
+{%-extends "bookingdetails.html"-%}
+
+{% block title %}Booking Tickets{% endblock %}
+
+{% block backlink %}
+<a href="javascript:history.back()">< Back</a>
+{% endblock-%}
+
+{% block id %}
+{% endblock %}
+
+{% block pickticket-%}
+<div>
+    <h3>Ticket Types</h3>
+    <p>Slots left:
+        <strong id="ticketsleft"{% if errors['soldout'] %} style="color:red;"{% endif %}>
+            {{ slotinfo['Slots left'] }}
+        </strong>
+    </p>
+    <div id="soldout" class="invalid-feedback"{% if errors['soldout'] %} style="display:initial;"{% endif %}>
+        Sorry, the slot is full
+    </div>
+    <div>
+        {% for type, price in slotinfo['Ticket Types'].items()-%}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ type }}</h5>
+                {% if type == 'Concession'-%}
+                <p class="card-text"> Student / Senior Citizen (60 Years & above) </p>
+                {% elif type == 'Child'-%}
+                <p class="card-text"> 6 years old and below and accompanied by an adult </p>
+                {% endif-%}
+                <strong class="price">${{ price }}</strong>
+                <button class="btn btn-primary btn-sm float-end position-relative" onclick="addticket('{{type}}', {{price}})">
+                    + Add to Cart
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary" id="{{type}}count">0</span>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock-%}
+
+{% block pickreward-%}
+{% if customerAcc-%}
+<script>
+    const availrewards = {};
+</script>
+<div>
+    <label for="rewardselect" class="form-label">Add Rewards</label>
+    <div class="input-group has-validation">
+        <button type="button" id="addrewardbut" class="btn btn-outline-secondary">+</button>
+        <select id="rewardselect" class="form-select" aria-describedby="addrewardbut rewarderror" required>
+            <option selected disabled>Select</option>
+            {% if session['userInfo'].rewards-%}
+            {% for option in session['userInfo'].rewards-%}
+            <script>
+                availrewards['{{ option.id }}'] = '{{ option.voucher }}';
+            </script>
+            <option value="{{ option.id }}">{{ option.voucher }}</option>
+            {% endfor-%}
+            {% else-%}
+            <option disabled style="color: red;">You have not redeemed any rewards</option>
+            {% endif-%}
+        </select>
+        <div id="rewarderror" class="invalid-feedback">
+            Please select a reward
+        </div>
+    </div>
+</div>
+{% endif-%}
+{% endblock-%}
+
+{% block tablecaption %}Cart{% endblock %}
+
+{% block extraheader %}
+<th>Price ($)</th>
+<th></th>
+{% endblock-%}
+
+{% block cartfoot %}
+<tfoot class="table-group-divider">
+    <tr>
+        <td id="pax">0</td>
+        <td>Total</td>
+        <td id="pricetotal">0</td>
+        <td></td>
+    </tr>
+</tfoot>
+{% endblock-%}
+
+{% block carterrors %}
+{% if 'cart' in errors-%}
+<div class="invalid-feedback" id="cart-error" style="display:initial;">
+    {{ errors['cart'] }}
+</div>
+{% endif-%}
+{% endblock-%}
+
+{% block requests %}
+<form method="post" id="bookingtickets" class="d-flex flex-column gap-4">
+    <div>
+        <label for="requests" class="form-label">Special Requests</label><br>
+        <textarea id="requests" name="requests" class="form-control" rows="3"
+                  placeholder="We will do our best to fulfil them">{{ form.get('requests','') }}</textarea>
+    </div>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if customerAcc-%}
+    <input type="hidden" name="claimed" id="claimed" value="{{ form.get('claimed','') }}">
+    <script>const cal_voucher_url = '{{ url_for('cal_voucher') }}'</script>
+    <script src="{{ url_for('static',filename='script/claimrewards.js') }}"></script>
+    {% endif-%}
+    <button type="submit" class="btn btn-success align-self-end" id="checkout" aria-disabled="true"
+            data-bs-toggle="tooltip" title="Please buy at least 1 Adult or Concession ticket">
+        Checkout >
+    </button>
+</form>
+{% endblock-%}
+
+{% block scripts %}
+<script>const ticketsleft = {{ slotinfo['Slots left'] }};</script>
+<script src="{{ url_for('static',filename='script/validate.js') }}"></script>
+<script src="{{ url_for('static',filename='script/bookingtickets.js') }}"></script>
+{% endblock-%}

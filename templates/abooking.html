@@ -1,0 +1,43 @@
+{% set curr_dropdown_item = 'My Bookings'-%}
+
+{%-extends "bookingdetails.html"-%}
+
+{% block styles %}
+{{ super() }}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+{% endblock %}
+
+{% block title %}Booking Details{% endblock %}
+
+{% block backlink %}
+<a href="{{ url_for(back[1]) }}">< {{ back[0]|safe }}</a>
+{% endblock %}
+
+{% block id %}
+{% for key, value in customer.items()-%}
+<h5>{{ key }}</h5>
+<p>{{ value }}</p>
+{% endfor-%}
+{% endblock %}
+
+{% block tablecaption %}Tickets{% endblock %}
+
+{% block requests %}
+{% if requests %}
+<div>
+    <h5>Special Requests</h5>
+    <p>{{ requests }}</p>
+</div>
+{% endif %}
+<div>
+    <a href="{{ url_for(back[1]) }}" class="float-end btn btn-primary ms-sm-4 ms-1">< {{ back[0]|safe }}</a>
+    <button class="float-end btn btn-danger delete" data-link="{{ url }}">
+        <i class="fa fa-trash-o"></i> Cancel
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static',filename='script/validate.js') }}"></script>
+<script src="{{ url_for('static',filename='script/fetchbooking.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,162 @@
+{%-if staff-%}
+{% set curr_page = 'Manage Bookings' %}
+{% set curr_dropdown_item = 'Customer Bookings' %}
+{%-else-%}
+{% set curr_page = 'Bookings' %}
+{% set curr_dropdown_item = 'My Bookings' %}
+{%-endif %}
+
+{%-extends "base.html"-%}
+
+{% block title %}
+{%-if staff-%}
+Customer
+{%-else-%}
+My
+{%-endif %} Bookings
+{%-endblock %}
+
+{% block styles %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<!-- jquery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<!-- jquery datepicker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<!-- bootstrap datepicker -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/sales.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1 class="mainheader">
+	{%-if staff-%}
+	Customer
+	{%-else-%}
+	My
+	{%-endif %} Bookings
+</h1>
+<div class="form-check d-inline-block">
+    <input class="form-check-input" type="checkbox" id="includepast" checked>
+    <label class="form-check-label" for="includepast">Include Past Bookings</label>
+</div>
+<button class="btn btn{% if not filtered %}-outline{% endif %}-secondary float-end" type="button"
+        data-bs-toggle="collapse" data-bs-target="#filters" aria-expanded="false" aria-controls="filters">
+    Filter{% if filtered %}ed{% endif %}
+</button>
+<form method="get" class="collapse" id="filters" role="search">
+    <div class="row g-3 mb-3">
+        <div class="col-lg">
+            <label for="typein" class="form-label">Booking Type</label>
+            <select id="typein" class="form-select" aria-describedby="typeerror" name="event">
+                <option selected>Select</option>
+                <option>Guided Tour</option>
+                <option disabled>Workshop</option>
+            </select>
+            <div id="typeerror" class="invalid-feedback">
+                Invalid type
+            </div>
+        </div>
+        <div class="col-lg">
+            <label for="datepicker" class="form-label">Date</label><br>
+            <div class="input-group date has-validation" id="datepicker" name="date">
+                <input type="search" class="form-control datepicker" id="date" name="date" placeholder="YYYY-MM-DD"
+                       onchange="validate(this, this.validity.valid);"
+                       aria-describedby="calenderbut dateerror" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" readonly>
+                <span class="input-group-text input-group-append" id="calenderbut">
+                    <i class="fa fa-calendar"></i>
+                </span>
+                <div id="dateerror" class="invalid-feedback">
+                    Incorrect format, please enter a date in the YYYY-MM-DD format
+                </div>
+            </div>
+            <script type="text/javascript">
+                $(function(){
+                    $('#datepicker').datepicker({
+                       todayHighlight: 'true',
+                       format: "yyyy-mm-dd"
+                    })
+                });
+        </script>
+        </div>
+        <div class="col-lg">
+            <label for="timeslot" class="form-label">Time Slot</label>
+            <select id="timeslot" class="form-select" aria-describedby="timeerror" name="timeslot">
+                <option selected>Select</option>
+                {% set slotimes = []-%}
+                {% for booking in bookings-%}
+                {% if booking.timestring not in slotimes-%}
+                {{ slotimes.append(booking.timestring)-}}
+                <option>{{ booking.timestring }}</option>
+                {% endif-%}
+                {% endfor-%}
+            </select>
+            <div id="timeerror" class="invalid-feedback">
+                Invalid time slot
+            </div>
+        </div>
+        {% if staff %}
+        <div class="col-lg">
+            <label class="form-label" for="name">Customer</label>
+            <input class="form-control" type="search" id="name" placeholder="Name" name="customer">
+        </div>
+        {% endif %}
+    </div>
+	<button class="btn btn-secondary" type="submit">Search</button>
+</form>
+{% if bookings %}
+<table class="table table-responsive table-dark table-hover" id="bookingsview">
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Time</th>
+            {% if staff %}
+            <th>Customer</th>
+            {% endif %}
+            <th>Pax</th>
+            <th>Cancel</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for booking in bookings %}
+        <tr data-link="{% if staff %}{{ booking.url(back='Customer Bookings', link='allbookings') }}
+                       {%-else %}{{ booking.url() }}{% endif %}">
+            <td>{{booking.event}}</td>
+            <td>{{booking.date}}</td>
+            <td>{{ booking.timestring }}</td>
+            {% if staff %}
+            <td>{{booking.name}}</td>
+            {% endif %}
+            <td>{{booking.pax}}</td>
+            <td>
+                <button class="btn btn-outline-danger btn-sm delete"
+                        data-link="{% if staff %}{{ booking.url(back='Customer Bookings', link='allbookings') }}
+                       {%-else %}{{ booking.url() }}{% endif %}">
+                    <i class="fa fa-trash-o"></i>
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>
+    {%if form-%}No bookings match your search{% else-%}
+    {% if staff %}No bookings have been made yet{% else-%}
+    You have not made any bookings with us yet. Would you like to visit us?
+    {% endif-%}
+    {%-endif-%}
+</p>
+{% endif %}
+<a href="{{ url_for('makebooking') }}" role="button" class="btn btn-primary">Make a Booking</a>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="{{ url_for('static',filename='script/validate.js') }}"></script>
+<script src="{{ url_for('static',filename='script/viewbookings.js') }}"></script>
+<script src="{{ url_for('static',filename='script/fetchbooking.js') }}"></script>
+{% endblock %}

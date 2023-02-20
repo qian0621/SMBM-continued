@@ -1,0 +1,53 @@
+{% set curr_page = 'Bookings'-%}
+
+{% extends "base.html"-%}
+
+{% block styles %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/sales.css') }}">
+{% endblock %}
+
+{% block content %}
+{% block backlink %}
+{% endblock %}
+<h1 class="mainheader">{% block title %}{% endblock %}</h1>
+<div class="row g-5 mb-4 ">
+    <div class="col-lg border-lg-end">
+        <div>
+            {% for key, value in bookinfo.items()-%}
+            <h5>{{ key }}</h5>
+            <p>{{ value }}</p>
+            {% endfor-%}
+            {% block id %}
+            {% endblock %}
+        </div>
+        {% block pickticket %}{% endblock %}
+    </div>
+    <div class="col-lg d-flex flex-column justify-content-between gap-4">
+        {% block pickreward %}{% endblock %}
+        <div class="scrolltable">
+            <table id="cart" class="table table-dark table-striped table-hover caption-top align-middle table-responsive">
+                <caption><h3>{% block tablecaption %}{% endblock %}</h3></caption>
+                <thead>
+                    <tr>
+                        <th>Qty</th>
+                        <th>Name</th>
+                        {% block extraheader %}{% endblock %}
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for name, quantity in tickets.items()-%}
+                    <tr>
+                        <td>{{ quantity }}</td>
+                        <td>{{ name }}</td>
+                    </tr>
+                    {% endfor-%}
+                </tbody>
+                {% block cartfoot %}{% endblock %}
+            </table>
+            {% block carterrors %}{% endblock %}
+        </div>
+        {% block requests %}
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}

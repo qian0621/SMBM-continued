@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+    <head>
+        <meta charset="UTF-8">
+
+        <!-- bootstrap css -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+        <!-- bootstrap js with popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+            crossorigin="anonymous"></script>
+        <!-- font awesome 4 svg icons -->
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/main.css') }}">
+        {% block styles %}{% endblock %}
+
+        <title>{% block title %}{% endblock %} | SMBM</title>
+
+        <!-- favicon -->
+        <link rel="icon" type="image/x-icon"
+            href="https://images.squarespace-cdn.com/content/v1/557e7f73e4b0ff7f4a6b68f1/1586589903791-GTJ8R9LTL1GJYUYV41CC/favicon.ico">
+    </head>
+
+    <body>
+        <header>
+            {% block navbar %}
+            {% include 'includes/navbar.html'-%}
+            {% endblock %}
+        </header>
+
+        <main>
+            {% with flashes = get_flashed_messages(with_categories=true)-%}
+            {% if flashes-%}
+            <div class="toast-container position-absolute z-3 start-50 translate-middle-x" id="notis">
+                {% for category, flash in flashes %}
+                <div class="toast align-items-center noti
+                {%-if category == 'noti' %} text-bg-primary{%-elif category == 'error' %} text-bg-danger{%-endif %}"
+                     role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+                    <div class="d-flex">
+                        <div class="toast-body">{{ flash|safe }}</div>
+                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            {%-block body %}
+            <div class="p-5 container bg-black bg-opacity-75 border border-white border-2 rounded-5 overflow-scroll hidescroll my-sm-5"
+                id="contentbk">
+                {% block content %}
+                {%-endblock %}
+            </div>
+            {% endblock %}
+        </main>
+
+        <a href="{{ url_for('chat') }}" id="chatbtn" class="btn btn-warning">
+            <i class="fa fa-comments-o p-1" id="chaticon"></i>
+        </a>
+
+        <script src="{{ url_for('static',filename='script/initToastNoti.js') }}"></script>
+        {%-block scripts %}{%-endblock %}
+    </body>
+
+</html>

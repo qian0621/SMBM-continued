@@ -1,0 +1,50 @@
+{% set navtype = 'staff' %}
+{% set curr_page = 'Manage Bookings' %}
+
+{% extends "base.html" %}
+{% block title %}Create Slot{% endblock %}
+
+<head><meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+
+{% block styles %}
+<link rel="stylesheet"
+      href="static/styles/product.css">
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+{% endblock %}
+
+
+{% block content %}
+{% from '/includes/formHelper.html' import render_field %}
+
+
+<h1 class="display-4">Create Slots</h1>
+
+<form method="POST" action="">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+  <div class="form-group">
+    {{ form.date }}
+    {% for message in get_flashed_messages() %}
+        <p>{{ message }}</p>
+    {% endfor %}
+  </div>
+  <div class="form-group">
+    {{ render_field(form.adultPrice, class="form-control") }}
+  </div>
+  <div class="form-group">
+    {{ render_field(form.concessionPrice, class="form-control") }}
+  </div>
+    <div class="form-group">
+      {{ render_field(form.childPrice, class="form-control") }}
+    </div>
+
+  <div><p>Availabilities will be set at the default value of '10'</p></div>
+
+  <a href="http://127.0.0.1:5000/viewSlots" class="btn btn-secondary">Back</a>
+  <input type="submit" value="Submit" class="btn btn-primary" />
+</form>
+
+{% endblock %}
+
+

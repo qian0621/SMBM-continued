@@ -1,0 +1,41 @@
+{% set curr_page = 'Home' %}
+{% extends "base.html" %}
+
+{% block title %}404 Page not found{% endblock %}
+
+{% block styles %}
+<style>
+    #maintainance {
+        object-position: top;
+        min-height: 0;
+    }
+
+    main {
+        height: calc(100% - 3.5rem);
+    }
+
+    body {
+        background-image: none;
+        height: 100vh;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="h-100 d-flex flex-column justify-content-between">
+    <img src="{{ url_for('static', filename='img/Maintainance.png') }}" alt="Musical Box Maintainance"
+         id="maintainance" class="flex-fill d-block object-fit-cover flex-shrink-1">
+    <div class="py-3 py-sm-4 px-3 px-md-4 text-center">
+        <h1>404</h1>
+        <h2>Oops! Page not found</h2>
+        <p>
+            Sorry, the page you are looking for does not exist and never existed<br>
+            If you think something is broken, please tell us!
+        </p>
+        <div>
+            <a href="{{ url_for('home') }}" class="mx-3 mb-3 btn btn-primary">Go Home</a>
+            <a href="{{ url_for('chat') }}" class="mx-3 mb-3 btn btn-primary">Contact Us</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

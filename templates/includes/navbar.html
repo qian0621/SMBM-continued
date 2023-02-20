@@ -1,0 +1,92 @@
+{%-set curr_page = curr_page|default('')-%}
+{%-set curr_dropdown_item = curr_dropdown_item|default('')-%}
+
+{% if 'userInfo' not in session %}
+{%-set navbar = {
+    'Home': '/',
+    'Register': {
+		'Customer Registration': '/register/customer',
+		'Staff Registration': '/register/staff',
+	},
+    'Login': '/login',
+    'Book Now': url_for('makebooking'),
+}-%}
+
+{% elif session['userInfo'].role == 'Customer' %}
+{%-set navbar = {
+    'Home': '/',
+    'Bookings': {
+		'Make a Booking': url_for('makebooking'),
+		'My Bookings': url_for("mybookings"),
+    },
+    'My Account': {
+        'Profile': '/profile'
+	},
+	'My Rewards':{
+		'Redeem Rewards': '/redeemRewards',
+        'Rewards History': '/rewardsHistory'
+	},
+	'Contact Us': url_for('chat'),
+	'Feedback Form': url_for('create_feedback'),
+    'Log Out': '/logout'
+}-%}
+
+{% elif session['userInfo'].role == 'Staff' %}
+{%-set navbar = {
+    'Home': '/',
+    'Manage Bookings': {
+		'Customer Bookings': url_for('allbookings'),
+		'View Slots': url_for("viewSlots"),
+		'Create Slots': url_for('createSlot')
+    },
+    'Manage Customers': {
+        'Manage Customers': "/manageCustomers",
+        'Create Customer Account': "/register/customer",
+		'Retrieve Feedback': url_for('retrieve_feedbacks'),
+        'Customer Support': "#"
+    },
+    'Manage Staff': {
+        'Manage Accounts': "/manageStaff",
+        'Create Staff Account': "/register/staff"
+    },
+	'View Chat Info': url_for('chatStaff'),
+	'Search Accounts':"/search",
+	'Log Out': '/logout'
+}-%}
+{% endif-%}
+
+<nav class="navbar navbar-expand-md bg-dark sticky-top">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="/">SMBM</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+	        <span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="collapsibleNavbar">
+		    <ul class="navbar-nav">
+		    {%-for text, click in navbar.items() %}
+			    <li class="nav-item{% if click is not string %} dropdown{% endif %}">
+			        <a class="nav-link
+			                  {%-if click is not string %} dropdown-toggle{% endif %}
+			                  {%-if text == curr_page %} active" aria-current="page{% endif %}"
+			            href="{% if click is string %}{{click}}{% else %}#"
+			            role="button" data-bs-toggle="dropdown{% endif %}">
+				        {{text}}
+			        </a>
+			        {%-if click is not string %}
+			        <ul class="dropdown-menu">
+				        {%-for option, link in click.items() %}
+				        <li>
+                            <a href="{{link}}" class="dropdown-item
+                               {%-if option == curr_dropdown_item %} active" aria-current="true{% endif %}">
+                                {{ option }}
+                            </a>
+                        </li>
+				        {%-endfor %}
+			        </ul>
+			        {%-endif %}
+			    </li>
+		        {%-endfor %}
+		    </ul>
+		</div>
+	</div>
+</nav>
