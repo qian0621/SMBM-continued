@@ -23,10 +23,10 @@
         <span>What would you like to do today?</span>
     </div>
     {%-if session['userInfo'].role == 'Staff' %}
-    <a href="{{url_for('allbookings')}}" class="btn btn-primary btn-lg mb-2">Manage Bookings</a>
+    <a href="{{url_for('booking_sys.allbookings')}}" class="btn btn-primary btn-lg mb-2">Manage Bookings</a>
     <a href="/manageCustomers" class="btn btn-primary btn-lg">Manage Customers</a>
     {%-else %}
-    <a href="{{url_for('makebooking')}}" class="btn btn-primary btn-lg">Make A Booking</a>
+    <a href="{{url_for('booking_sys.makebooking')}}" class="btn btn-primary btn-lg">Make A Booking</a>
     {%-endif %}
         {%-else %}
         <h1>
@@ -34,7 +34,7 @@
             Renew A History of Music
         </h1>
     </div>
-    <a href="{{url_for('makebooking')}}" class="btn btn-primary btn-lg">Make A Booking Today</a>
+    <a href="{{url_for('booking_sys.makebooking')}}" class="btn btn-primary btn-lg">Make A Booking Today</a>
     {%-endif %}
 </div>
 <!--{% if message %}-->

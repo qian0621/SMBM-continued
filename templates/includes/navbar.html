@@ -9,15 +9,15 @@
 		'Staff Registration': '/register/staff',
 	},
     'Login': '/login',
-    'Book Now': url_for('makebooking'),
+    'Book Now': url_for('booking_sys.makebooking'),
 }-%}
 
 {% elif session['userInfo'].role == 'Customer' %}
 {%-set navbar = {
     'Home': '/',
     'Bookings': {
-		'Make a Booking': url_for('makebooking'),
-		'My Bookings': url_for("mybookings"),
+		'Make a Booking': url_for('booking_sys.makebooking'),
+		'My Bookings': url_for("booking_sys.mybookings"),
     },
     'My Account': {
         'Profile': '/profile'
@@ -35,7 +35,7 @@
 {%-set navbar = {
     'Home': '/',
     'Manage Bookings': {
-		'Customer Bookings': url_for('allbookings'),
+		'Customer Bookings': url_for('booking_sys.allbookings'),
 		'View Slots': url_for("viewSlots"),
 		'Create Slots': url_for('createSlot')
     },

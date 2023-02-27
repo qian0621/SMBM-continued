@@ -10,6 +10,7 @@ mailer = SMTP('ninaqing2005@gmail.com', 'syyqlvyooeejeafj')
 
 class Booking:
     count: int
+    count_store = "storage/config.json"
 
     def __init__(self, day: str, event: str, tickets: dict, requests: str,
                  timeslot: time | tuple[time, time] | None = None,
@@ -63,7 +64,7 @@ class Booking:
         return sum(self.tickets.values())
 
     def url(self, **kwargs):
-        return url_for('abooking', customerName=self.dbkey, bookingid=self.id, **kwargs)
+        return url_for('.abooking', customerName=self.dbkey, bookingid=self.id, **kwargs)
 
     @property
     def timestring(self):
@@ -75,7 +76,7 @@ class Booking:
     def set_id(self):
         self.id = self.count
         self.__class__.count += 1
-        with open("storage/config.json", "r+") as config_file:
+        with open(self.count_store, "r+") as config_file:
             config = json.load(config_file)
             config["Booking.count"] = self.count
             config_file.seek(0)
@@ -136,7 +137,7 @@ class Booking:
 
     @classmethod
     def set_count(cls):
-        with open('storage/config.json', 'r') as config:
+        with open(cls.count_store, 'r') as config:
             config_data = json.load(config)
         cls.count = config_data['Booking.count']
 

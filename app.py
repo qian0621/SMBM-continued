@@ -24,7 +24,8 @@ csrf = CSRFProtect(app)
 # @csrf.exempt
 
 from routes_Harini import *
-from bookings_QianNing import *
+from booking_sys.routes import booking_sys
+app.register_blueprint(booking_sys, url_prefix='/bookings')
 from rewards_Nas import *
 from productsroutes_Sixuan import *
 from chatbot_Kyarnyo import *

@@ -1,15 +1,16 @@
-from app import app
-from flask import render_template, request, redirect, url_for, session, jsonify, abort, flash
+from flask import render_template, request, redirect, url_for, session, jsonify, abort, flash, Blueprint
 import shelve
 from products_Sixuan import Slots
 from datetime import date, time, datetime, timedelta
 from re import match
-from booking import Booking
+from booking_sys.models import Booking
 import json
 # from classes_Nas import Reward
 
+booking_sys = Blueprint('booking_sys', __name__, template_folder='templates', static_folder='static')
 
-@app.route('/bookings', methods=['GET', 'POST'])
+
+@booking_sys.route('/', methods=['GET', 'POST'])
 def makebooking():
     errors = {}
     datetimetime = request.args.get('slot')
@@ -90,7 +91,7 @@ def booktickets(slotinfo):
                                       timeslot=slotinfo['bookinfo']['Time Slot'],
                                       **customerid)
                 flash(madebooking.mail(), 'noti')
-                return redirect(url_for('abooking', customerName=madebooking.name, bookingid=madebooking.id))
+                return redirect(url_for('.abooking', customerName=madebooking.name, bookingid=madebooking.id))
     print(errors)   # ticketype, claim
     slotinfo['bookinfo']['Time Slot'] = "{:%I:%M %p} - {:%I:%M %p}".format(*slotinfo['bookinfo']['Time Slot'])
     return render_template('bookingtickets.html',
@@ -101,7 +102,7 @@ def booktickets(slotinfo):
                            customerAcc=('userInfo' in session and session['userInfo'].role == 'Customer'))
 
 
-@app.route('/bookings/voucher')
+@booking_sys.route('/voucher')
 def cal_voucher():
     if 'voucher' not in request.args or 'subtotal' not in request.args:
         abort(400, "url parameters 'voucher' and 'subtotal' not there")
@@ -114,7 +115,7 @@ def cal_voucher():
     abort(403, 'You do not have ' + voucher)
 
 
-@app.route('/bookings/mybookings')
+@booking_sys.route('/mybookings')
 def mybookings():
     # hardcoding
     filters = request.args
@@ -127,9 +128,9 @@ def mybookings():
     return render_template('viewbookings.html', **filterbookings(bookings, filters))
 
 
-@app.route('/bookings/<string:customerName>/<int:bookingid>', methods=['GET', 'POST', 'DELETE'])
-@app.route('/bookings/<string:customerName>/<int:bookingid>/<string:back>/<string:link>', methods=['GET', 'POST', 'DELETE'])
-def abooking(customerName, bookingid, back='My Bookings', link='mybookings'):
+@booking_sys.route('/<string:customerName>/<int:bookingid>', methods=['GET', 'POST', 'DELETE'])
+@booking_sys.route('/<string:customerName>/<int:bookingid>/<string:back>/<string:link>', methods=['GET', 'POST', 'DELETE'])
+def abooking(customerName, bookingid, back='My Bookings', link='.mybookings'):
     print(customerName, bookingid, back, link)
     if 'userInfo' in session and \
             (customerName == session['userInfo'].name or session['userInfo'].role == 'Staff'):
@@ -157,7 +158,7 @@ def abooking(customerName, bookingid, back='My Bookings', link='mybookings'):
     abort(404, f'{customerName} does not have this booking')
 
 
-@app.route('/bookings/all')
+@booking_sys.route('/all')
 def allbookings():
     filters = request.args
     print(filters)

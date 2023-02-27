@@ -27,7 +27,7 @@ My
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 
-<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/sales.css') }}">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('.static',filename='styles/sales.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -44,7 +44,7 @@ My
 </div>
 <button class="btn btn{% if not filtered %}-outline{% endif %}-secondary float-end" type="button"
         data-bs-toggle="collapse" data-bs-target="#filters" aria-expanded="false" aria-controls="filters">
-    Filter{% if filtered %}ed{% endif %}
+    Filter{% if filtered-%}ed{% endif %}
 </button>
 <form method="get" class="collapse" id="filters" role="search">
     <div class="row g-3 mb-3">
@@ -122,7 +122,7 @@ My
     </thead>
     <tbody class="table-group-divider">
         {% for booking in bookings %}
-        <tr data-link="{% if staff %}{{ booking.url(back='Customer Bookings', link='allbookings') }}
+        <tr data-link="{% if staff %}{{ booking.url(back='Customer Bookings', link='.allbookings') }}
                        {%-else %}{{ booking.url() }}{% endif %}">
             <td>{{booking.event}}</td>
             <td>{{booking.date}}</td>
@@ -151,12 +151,12 @@ My
     {%-endif-%}
 </p>
 {% endif %}
-<a href="{{ url_for('makebooking') }}" role="button" class="btn btn-primary">Make a Booking</a>
+<a href="{{ url_for('.makebooking') }}" role="button" class="btn btn-primary">Make a Booking</a>
 {% endblock %}
 
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="{{ url_for('static',filename='script/validate.js') }}"></script>
-<script src="{{ url_for('static',filename='script/viewbookings.js') }}"></script>
-<script src="{{ url_for('static',filename='script/fetchbooking.js') }}"></script>
+<script src="{{ url_for('.static',filename='script/viewbookings.js') }}"></script>
+<script src="{{ url_for('.static',filename='script/fetchbooking.js') }}"></script>
 {% endblock %}
