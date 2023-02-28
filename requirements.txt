@@ -6,3 +6,4 @@ Jinja2==3.0.1
 WTForms==3.0.1
 yagmail == 0.15.293
 flask_socketio == 5.3.2
+Werkzeug==2.2.2

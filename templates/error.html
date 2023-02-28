@@ -6,4 +6,8 @@
 {% block content %}
 <h1>{{ e.code }} {{ e.name }}</h1>
 <p>{{ e.description }}</p>
+<div>
+    <a href="{{ url_for('home') }}" class="float-start btn btn-primary">Go Home</a>
+    <a href="{{ url_for('chat') }}" class="float-end btn btn-primary">Contact Us</a>
+</div>
 {% endblock %}

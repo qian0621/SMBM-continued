@@ -2,6 +2,7 @@ from flask import Flask, render_template, session, flash, get_flashed_messages
 from flask_session import Session
 from os import urandom
 from flask_wtf.csrf import CSRFProtect
+from werkzeug.exceptions import HTTPException
 
 app = Flask(__name__)
 
@@ -43,9 +44,9 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
-@app.errorhandler(403)
-def forbidden(e):
-    return render_template('403.html', e=e), 403
+@app.errorhandler(HTTPException)
+def errorhandler(e):
+    return render_template('error.html', e=e), 403
 
 
 @app.errorhandler(401)
