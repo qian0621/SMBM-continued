@@ -4,22 +4,18 @@ from app import app
 from user_classes import *
 from classes_Nas import *
 
+
 def loggedIn():
     return 'userInfo' in session
-def notLoggedIn():
-    return notLoggedIn()
-def cannotView():
-    return 'You are not allowed to view this page!'
 
 
 def page(accountType, render):
     if not loggedIn():
-        session['message'] = notLoggedIn()
-        return redirect('/login')
+        abort(401)
     elif session['userInfo'].role == accountType:
         return render
-    session['message'] = cannotView()
-    return redirect('login')
+    else:
+        abort(403)
 
 # Customer Pages
 
@@ -64,8 +60,7 @@ def manageStaff():
 def specificSearch(name):
     # Prevent access without login & staff role
     if not loggedIn():
-        session['message'] = notLoggedIn()
-        return redirect('/login')
+        abort(401)
     # If user presses search without a customer name, redirect them back to the main page
     elif name == '':
         return redirect('/search')
@@ -76,16 +71,14 @@ def specificSearch(name):
             except KeyError:
                 session['message'] = f'A customer with the name of {name} does not exist!'
                 return redirect('/search')
-    session['message'] = cannotView()
-    return redirect('/login')
+    abort(403)
 
 
 @app.route('/search')
 def search():
     # Prevent access without login & staff role
     if not loggedIn():
-        session['message'] = notLoggedIn()
-        return redirect('/login')
+        abort(401)
     elif session['userInfo'].role == 'Staff':
         try:
             message = session['message']
@@ -93,5 +86,4 @@ def search():
             return render_template('search.html', message=message)
         except KeyError:
             return render_template('search.html')
-    session['message'] = cannotView()
-    return redirect('/login')
+    abort(403)

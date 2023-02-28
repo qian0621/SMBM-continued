@@ -10,7 +10,8 @@ mailer = SMTP('ninaqing2005@gmail.com', 'syyqlvyooeejeafj')
 
 class Booking:
     count: int
-    count_store = "storage/config.json"
+    count_storage = "storage/config.json"
+    storage = 'storage/bookings'
 
     def __init__(self, day: str, event: str, tickets: dict, requests: str,
                  timeslot: time | tuple[time, time] | None = None,
@@ -76,7 +77,7 @@ class Booking:
     def set_id(self):
         self.id = self.count
         self.__class__.count += 1
-        with open(self.count_store, "r+") as config_file:
+        with open(self.count_storage, "r+") as config_file:
             config = json.load(config_file)
             config["Booking.count"] = self.count
             config_file.seek(0)
@@ -84,7 +85,7 @@ class Booking:
             config_file.truncate()
 
     def store(self):
-        with shelve.open('storage/bookings', writeback=True) as bookings:
+        with shelve.open(self.storage, writeback=True) as bookings:
             # customer: their bookings
             if self.dbkey not in bookings:
                 bookings[self.dbkey] = [self]
@@ -137,7 +138,7 @@ class Booking:
 
     @classmethod
     def set_count(cls):
-        with open(cls.count_store, 'r') as config:
+        with open(cls.count_storage, 'r') as config:
             config_data = json.load(config)
         cls.count = config_data['Booking.count']
 
