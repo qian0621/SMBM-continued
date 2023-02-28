@@ -1,15 +1,28 @@
 import shelve
 from datetime import time, date, timedelta
 
+
 class Slots:
-    def __init__(self, d: str):
+    def __init__(self, d: str, event: str = 'Guided Tour'):
         self.date = d
+        self.event = event
         self.price = {"Adult": 10, "Concession": 6, "Child": 0}
         self.availability = {(time(10), time(10, 45)): 10,
                              (time(11), time(11, 45)): 10,
                              (time(14), time(14, 45)): 10,
                              (time(15), time(15, 45)): 10,
                              (time(16), time(16, 45)): 10}
+
+    def slotinfo(self, timerange: tuple[time, time]):
+        try:
+            slotsleft = self.availability[timerange]
+            if slotsleft > 0:
+                return {'bookinfo': {'Booking Type': self.event, 'Date': self.date, 'Time Slot': timerange},
+                        'slotinfo': {'Slots left': slotsleft, 'Ticket Types': self.price}}
+            else:
+                raise LookupError('Sorry, the time slot you picked has sold out. Please choose another')
+        except KeyError:    # if timerange not in self.avaliability
+            raise KeyError('Sorry, the time slot you picked is not available on that date')
 
     def getDate(self):
         return str(self.date)

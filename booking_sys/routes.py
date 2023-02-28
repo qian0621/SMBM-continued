@@ -15,15 +15,13 @@ def makebooking():
     errors = {}
     datetimetime = request.args.get('slot')
     if datetimetime:                                    # desired time slot submitted
-        if validslotformat(datetimetime):
-            slotinfo = checkslotavail(datetimetime)     # {date:str, timeslot:tuple}, {left:int, ticketypes:dict}
-            print(slotinfo)
-            if slotinfo:                                # slot available
-                return booktickets(slotinfo)            # POST form booking details
-            else:                                       # slot unavailable
-                errors['slot'] = 'Sorry, the time slot you picked is no longer available. Please choose another'
-        else:                                           # invalid datetimetime format
-            errors['slot'] = 'Sorry, there was a date time format error. Please try again'                                          # load pick timeslot form
+        try:
+            slotinfo = getslotinfo(*strtodatetime(datetimetime))
+            print(slotinfo)     # {date:str, timeslot:tuple}, {left:int, ticketypes:dict}
+            return booktickets(slotinfo)            # POST form booking details
+        except Exception as e:
+            errors['slot'] = e
+    # load pick timeslot form
     availinfo = dbtoslotform()
     if availinfo:
         return render_template('makebooking.html',      # 1st load or error reload
@@ -50,19 +48,21 @@ def booktickets(slotinfo):
             tickets = {}
             ticketcount = 0
             for key, value in prevsubmit.items():
-                if key in slotinfo['slotinfo']['Ticket Types']:
-                    if key in tickets:
-                        errors[key] = 'Submitted data is malformed, please try again'
-                    else:
-                        if value.isdigit():
-                            quantity = int(value)
-                            if quantity > 0:
-                                ticketcount += quantity
-                                tickets[key] = quantity
-                                if ticketcount > slotinfo['slotinfo']['Slots left']:
-                                    errors['soldout'] = True
-                        if key not in tickets:
-                            errors[key] = 'Invalid value, please enter a positive integer'
+                if errors:
+                    break
+                elif key in slotinfo['slotinfo']['Ticket Types']:
+                    try:
+                        quantity = int(value)
+                        if quantity > 0:
+                            ticketcount += quantity
+                            tickets[key] = quantity
+                            if ticketcount > slotinfo['slotinfo']['Slots left']:
+                                errors['soldout'] = True
+                                break
+                        else:
+                            raise ValueError("Value must be a positive integer")
+                    except ValueError:
+                        errors[key] = 'Invalid value, please enter a positive integer'
                 elif key == 'claimed':
                     if value:
                         claims = json.loads(value)
@@ -170,33 +170,34 @@ def allbookings():
         abort(403, "Only staff allowed")
 
 
-def validslotformat(string):
+def strtodatetime(datetimetime: str) -> tuple[str, tuple[time, time]]:
     # 2023-01-18.15:00:00_15:45:00
     pattern = r"^\d{4}-\d{2}-\d{2}\.\d{2}:\d{2}:\d{2}_\d{2}:\d{2}:\d{2}$"
-    return match(pattern, string) is not None
-
-
-def checkslotavail(string):
-    pickedate, timerange = string.split('.')
-    timerange = tuple([time.fromisoformat(startend) for startend in timerange.split('_')])
-    if datetime.now() <= datetime.combine(date.fromisoformat(pickedate), timerange[0]):
-        with shelve.open('storage/slots') as slotsDB:
-            if pickedate in slotsDB:
-                day = slotsDB[pickedate]
-                dateslots = day.availability
-                if timerange in dateslots:
-                    slotsleft = dateslots[timerange]
-                    if slotsleft > 0:
-                        return {'bookinfo': {'Booking Type': 'Guided Tour', 'Date': pickedate, 'Time Slot': timerange},
-                                'slotinfo': {'Slots left': slotsleft, 'Ticket Types': day.price}}
-                    else:
-                        print('Ran out of slots')
-                else:
-                    print('Time Slot not in day')
-            else:
-                print('Date not available for sale')
+    if match(pattern, datetimetime) is not None:
+        try:
+            pickedate, timerange = datetimetime.split('.')
+            timerange = tuple([time.fromisoformat(startend) for startend in timerange.split('_')])
+            # ValueError: hour must be in 0..23
+            return pickedate, timerange
+        except ValueError:
+            raise ValueError("Sorry, there was a date time format error. Please try again")
     else:
-        print('Slot is over/has alr begun')
+        raise ValueError("Sorry, there was a date time format error. Please try again")
+
+
+def getslotinfo(datestr: str, timerange: tuple[time, time])\
+        -> dict[str, dict[str, str | tuple[time, time]] | dict[str, int | dict[str, int]]]:
+    try:
+        pickedate = date.fromisoformat(datestr)
+    except ValueError:  # ValueError: day is out of range for month
+        raise ValueError("Sorry, there was a date time format error. Please try again")
+    if datetime.now() <= datetime.combine(pickedate, timerange[0]):
+        with shelve.open('storage/slots') as slotsDB:
+            return slotsDB[datestr].slotinfo(timerange)
+            # LookupError('Sorry, the slot is sold out')
+            # KeyError('Sorry, the time slot you picked is not available on that date')
+    else:
+        raise ValueError('slot is over or has already begun')
 
 
 def dbtoslotform():
