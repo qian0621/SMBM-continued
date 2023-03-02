@@ -73,7 +73,6 @@ def cal_voucher():
     voucher = request.args['voucher']
     for reward in session['userInfo'].rewards:
         if reward.voucher == voucher:
-            print(str(reward.discount(int(request.args['subtotal']))))
             return str(reward.discount(int(request.args['subtotal'])))
     # user does not have reward
     abort(403, 'You do not have ' + voucher)
@@ -241,8 +240,7 @@ def procorder(order, slotinfo):
                     claimed = False
                     for reward in userewards:
                         if str(reward.id) == claim:
-                            userewards.remove(reward)
-                            user.update_db()
+                            user.delReward(reward)
                             claimed = True
                             break
                     if not claimed:

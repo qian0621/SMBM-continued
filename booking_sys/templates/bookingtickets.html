@@ -110,7 +110,7 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     {% if customerAcc-%}
     <input type="hidden" name="claimed" id="claimed" value="{{ form.get('claimed','') }}">
-    <script>const cal_voucher_url = '{{ url_for('cal_voucher') }}'</script>
+    <script>const cal_voucher_url = '{{ url_for('.cal_voucher') }}'</script>
     <script src="{{ url_for('.static',filename='script/claimrewards.js') }}"></script>
     {% endif-%}
     <button type="submit" class="btn btn-success align-self-end" id="checkout" aria-disabled="true"

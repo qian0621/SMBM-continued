@@ -47,6 +47,6 @@ function voucher_amt(voucher, subtotal) {
 	    })
 	    .catch(error => {
 			console.error(error);
-			return 0; // or any other default value
+			return NaN; // or any other default value
 	    });
 }

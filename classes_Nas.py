@@ -66,7 +66,7 @@ class Guidedtour20(Reward):
 
 
 class Cafe1(Reward):
-    voucher = "$1 off any dish in café "
+    voucher = "$1 off any dish in café"
     points = 5
 
     @staticmethod

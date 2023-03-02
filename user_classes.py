@@ -6,21 +6,23 @@ from flask import session
 
 
 class Account:
-    count = 0
+    count: int
 
     def __init__(self, name, email, password):
         self.name = name
         self.email = email
+        self.passwordhash: str
         self.password = password
         self.set_id()
 
-    def check_password(self, password):
-        return hashlib.sha256(password.encode()).hexdigest() == self.passwordhash
+    password = property()
 
-    def set_password(self, password):
+    @password.setter
+    def password(self, password):
         self.passwordhash = hashlib.sha256(password.encode()).hexdigest()
 
-    password = property(None, set_password)
+    def check_password(self, password):
+        return hashlib.sha256(password.encode()).hexdigest() == self.passwordhash
 
     def set_id(self):
         self.id = self.count
@@ -34,7 +36,7 @@ class Account:
             config_file.truncate()
 
     @classmethod
-    def update_count(cls):
+    def set_count(cls):
         with open('storage/config.json', 'r') as config:
             config_data = json.load(config)
         cls.count = config_data['Account.count']
@@ -88,10 +90,11 @@ class Customer(Account):
             case _: return ValueError
         session['userInfo'] = self
 
-    def delRewards(self, reward):
+    def delReward(self, reward):
         if reward not in self.rewards:
-            return 'This reward does not exist'
+            raise ValueError('Reward does not exist')
         self.rewards.remove(reward)
+        self.update_db()
 
 
-Account.update_count()
+Account.set_count()
