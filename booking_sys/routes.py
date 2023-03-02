@@ -5,7 +5,7 @@ from datetime import date, time, datetime, timedelta
 from re import match
 from booking_sys.models import Booking
 import json
-# from classes_Nas import Reward
+from errors import ShownError
 
 booking_sys = Blueprint('booking_sys', __name__, template_folder='templates', static_folder='static')
 
@@ -19,8 +19,8 @@ def makebooking():
             slotinfo = getslotinfo(*strtodatetime(datetimetime))
             print(slotinfo)     # {date:str, timeslot:tuple}, {left:int, ticketypes:dict}
             return booktickets(slotinfo)            # POST form booking details
-        except Exception as e:
-            errors['slot'] = e
+        except ShownError as e:
+            errors[e.display_element_id] = e
     # load pick timeslot form
     availinfo = dbtoslotform()
     if availinfo:
@@ -39,59 +39,23 @@ def booktickets(slotinfo):
     if request.method == 'POST':
         prevsubmit = request.form
         print(prevsubmit)
-        if not ('Adult' in prevsubmit or 'Concession' in prevsubmit or 'Child' in prevsubmit):
-            errors['cart'] = 'Your cart is empty, please pick a Concession or Adult ticket before checkout'
-        elif not ('Adult' in prevsubmit or 'Concession' in prevsubmit):
-            errors['cart'] = 'Children under 7 need to be accompanied by an adult, ' \
-                             'please buy at least 1 Adult or Concession ticket'
+        try:
+            tickets = procorder(prevsubmit, slotinfo)
+        except ShownError as e:
+            errors[e.display_element_id] = e
         else:
-            tickets = {}
-            ticketcount = 0
-            for key, value in prevsubmit.items():
-                if errors:
-                    break
-                elif key in slotinfo['slotinfo']['Ticket Types']:
-                    try:
-                        quantity = int(value)
-                        if quantity > 0:
-                            ticketcount += quantity
-                            tickets[key] = quantity
-                            if ticketcount > slotinfo['slotinfo']['Slots left']:
-                                errors['soldout'] = True
-                                break
-                        else:
-                            raise ValueError("Value must be a positive integer")
-                    except ValueError:
-                        errors[key] = 'Invalid value, please enter a positive integer'
-                elif key == 'claimed':
-                    if value:
-                        claims = json.loads(value)
-                        customerAcc = session['userInfo']
-                        for claim in claims:
-                            claimed = False
-                            for reward in customerAcc.rewards:
-                                if str(reward.id) == claim:
-                                    customerAcc.rewards.remove(reward)
-                                    customerAcc.update_db()
-                                    claimed = True
-                                    break
-                            if not claimed:
-                                errors['cart'] = f'Sorry, the reward you claimed is not available, please remove from cart'
-                                break
-            if not errors:
-                customer = session.get('userInfo')
-                if customer:
-                    customerid = {'customer': customer}
-                else:
-                    customerid = {'email': ''}
-                madebooking = Booking(day=slotinfo['bookinfo']['Date'],
-                                      event=slotinfo['bookinfo']['Booking Type'],
-                                      tickets=tickets,
-                                      requests=prevsubmit['requests'],
-                                      timeslot=slotinfo['bookinfo']['Time Slot'],
-                                      **customerid)
-                flash(madebooking.mail(), 'noti')
-                return redirect(url_for('.abooking', customerName=madebooking.name, bookingid=madebooking.id))
+            if 'userInfo' in session:
+                customerid = {'customer': session['userInfo']}
+            else:
+                customerid = {'email': ''}
+            madebooking = Booking(day=slotinfo['bookinfo']['Date'],
+                                  event=slotinfo['bookinfo']['Booking Type'],
+                                  tickets=tickets,
+                                  requests=prevsubmit['requests'],
+                                  timeslot=slotinfo['bookinfo']['Time Slot'],
+                                  **customerid)
+            flash(madebooking.mail(), 'noti')
+            return redirect(url_for('.abooking', customerName=madebooking.name, bookingid=madebooking.id))
     print(errors)   # ticketype, claim
     slotinfo['bookinfo']['Time Slot'] = "{:%I:%M %p} - {:%I:%M %p}".format(*slotinfo['bookinfo']['Time Slot'])
     return render_template('bookingtickets.html',
@@ -179,25 +143,33 @@ def strtodatetime(datetimetime: str) -> tuple[str, tuple[time, time]]:
             timerange = tuple([time.fromisoformat(startend) for startend in timerange.split('_')])
             # ValueError: hour must be in 0..23
             return pickedate, timerange
-        except ValueError:
-            raise ValueError("Sorry, there was a date time format error. Please try again")
+        except ValueError as e:
+            raise ShownError("Sorry, there was a date time format error. Please try again", e,
+                             display_element_id='slot-error')
     else:
-        raise ValueError("Sorry, there was a date time format error. Please try again")
+        raise ShownError("Sorry, there was a date time format error. Please try again",
+                         display_element_id='slot-error')
 
 
 def getslotinfo(datestr: str, timerange: tuple[time, time])\
         -> dict[str, dict[str, str | tuple[time, time]] | dict[str, int | dict[str, int]]]:
     try:
         pickedate = date.fromisoformat(datestr)
-    except ValueError:  # ValueError: day is out of range for month
-        raise ValueError("Sorry, there was a date time format error. Please try again")
+    except ValueError as e:  # ValueError: day is out of range for month
+        raise ShownError("Sorry, there was a date time format error. Please try again", e,
+                         display_element_id='slot-error')
     if datetime.now() <= datetime.combine(pickedate, timerange[0]):
         with shelve.open('storage/slots') as slotsDB:
-            return slotsDB[datestr].slotinfo(timerange)
-            # LookupError('Sorry, the slot is sold out')
-            # KeyError('Sorry, the time slot you picked is not available on that date')
+            try:
+                return slotsDB[datestr].slotinfo(timerange)
+                # ShownError('Sorry, the time slot you picked has sold out. Please choose another')
+                # ShownError('Sorry, the time slot you picked is not available on that date', e)
+            except KeyError as e:   # if datestr not in slotsDB
+                raise ShownError('Sorry, the date you picked is not available. Please pick another', e,
+                                 display_element_id='slot-error')
     else:
-        raise ValueError('slot is over or has already begun')
+        raise ShownError('Sorry, the slot you picked is over or has already begun. Please pick another',
+                         display_element_id='slot-error')
 
 
 def dbtoslotform():
@@ -225,6 +197,58 @@ def dbtoslotform():
         curr_date += timedelta(days=1)
     return {'datepicker': {'startDate': str(firstdate), 'endDate': str(lastdate), 'datesDisabled': unavaliable},
             'avaliable': availslots}
+
+
+def procorder(order, slotinfo):
+    if not any([ticketype in order for ticketype in slotinfo['slotinfo']['Ticket Types']]):
+        raise ShownError('Your cart is empty, please pick a Concession or Adult ticket before checkout',
+                         display_element_id='cart-error')
+    if not ('Adult' in order or 'Concession' in order):
+        raise ShownError('Children under 7 need to be accompanied by an adult, '
+                         'please buy at least 1 Adult or Concession ticket',
+                         display_element_id='cart-error')
+    tickets = {}
+    ticketcount = 0
+    for key, value in order.items():
+        if key in slotinfo['slotinfo']['Ticket Types']:
+            try:
+                quantity = int(value)
+                if quantity > 0:
+                    ticketcount += quantity
+                    tickets[key] = quantity
+                    if ticketcount > slotinfo['slotinfo']['Slots left']:
+                        raise ShownError(display_element_id='soldout')
+                else:
+                    raise ValueError("Value must be a positive integer")
+            except ValueError as e:
+                raise ShownError('Invalid value, please enter a positive integer', e,
+                                 display_element_id=key)
+        elif key == 'claimed':
+            if value:
+                try:
+                    claims = json.loads(value)
+                except json.decoder.JSONDecodeError as e:
+                    raise ShownError('Sorry, there was a reward format error. Please try again', e,
+                                     display_element_id='cart-error')
+                try:
+                    user = session['userInfo']
+                    userewards = user.rewards
+                except KeyError as e:
+                    raise ShownError('You need to login to claim your rewards', e, display_element_id='cart-error')
+                except AttributeError as e:
+                    raise ShownError('Rewards are only available to customers', e, display_element_id='cart-error')
+                for claim in claims:
+                    claimed = False
+                    for reward in userewards:
+                        if str(reward.id) == claim:
+                            userewards.remove(reward)
+                            user.update_db()
+                            claimed = True
+                            break
+                    if not claimed:
+                        raise ShownError('Sorry, the reward you claimed is not available, please remove from cart',
+                                         display_element_id='cart-error')
+    return tickets
 
 
 def filterbookings(bookings, filters):

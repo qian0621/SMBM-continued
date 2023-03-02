@@ -1,5 +1,6 @@
 import shelve
 from datetime import time, date, timedelta
+from errors import ShownError
 
 
 class Slots:
@@ -15,14 +16,16 @@ class Slots:
 
     def slotinfo(self, timerange: tuple[time, time]):
         try:
-            slotsleft = self.availability[timerange]
+            slotsleft = self.availability[timerange]    # KeyError if timerange not in self.avaliability
             if slotsleft > 0:
                 return {'bookinfo': {'Booking Type': self.event, 'Date': self.date, 'Time Slot': timerange},
                         'slotinfo': {'Slots left': slotsleft, 'Ticket Types': self.price}}
             else:
-                raise LookupError('Sorry, the time slot you picked has sold out. Please choose another')
-        except KeyError:    # if timerange not in self.avaliability
-            raise KeyError('Sorry, the time slot you picked is not available on that date')
+                raise ShownError('Sorry, the time slot you picked has sold out. Please choose another',
+                                 display_element_id='slot-error')
+        except KeyError as e:
+            raise ShownError('Sorry, the time slot you picked is not available on that date', e,
+                             display_element_id='slot-error')
 
     def getDate(self):
         return str(self.date)

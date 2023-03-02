@@ -93,9 +93,9 @@
 {% endblock-%}
 
 {% block carterrors %}
-{% if 'cart' in errors-%}
+{% if 'cart-error' in errors-%}
 <div class="invalid-feedback" id="cart-error" style="display:initial;">
-    {{ errors['cart'] }}
+    {{ errors['cart-error'] }}
 </div>
 {% endif-%}
 {% endblock-%}

@@ -1,8 +1,7 @@
-from flask import Flask, render_template, session, flash, get_flashed_messages
+from flask import Flask, render_template
 from flask_session import Session
 from os import urandom
 from flask_wtf.csrf import CSRFProtect
-from werkzeug.exceptions import HTTPException
 
 app = Flask(__name__)
 
@@ -24,6 +23,7 @@ csrf = CSRFProtect(app)
 # from app import app, csrf
 # @csrf.exempt
 
+from errors import *
 from routes_Harini import *
 from booking_sys.routes import booking_sys
 app.register_blueprint(booking_sys, url_prefix='/bookings')
@@ -37,22 +37,6 @@ from chatserver import *
 @app.route('/')
 def home():
     return render_template('home.html')
-
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
-
-
-@app.errorhandler(HTTPException)
-def errorhandler(e):
-    return render_template('error.html', e=e), 403
-
-
-@app.errorhandler(401)
-def unauthorised(e):
-    flash('Login to gain access', 'error')
-    return redirect(url_for('login'))
 
 # $ flask --debug run
 # $ source env/bin/activate

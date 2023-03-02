@@ -63,8 +63,8 @@
         <div>
             <h4>Avaliable Time Slots</h4>
             <div class="invalid-feedback" id="slot-error"
-                 {% if 'slot' in errors %}style="display:initial;"{% endif %}>
-                {{ errors['slot']|default('Please pick a timeslot') }}
+                 {% if 'slot-error' in errors %}style="display:initial;"{% endif %}>
+                {{ errors['slot-error']|default('Please pick a timeslot') }}
             </div>
         </div>
         {% for date, slots in avaliable.items() %}
