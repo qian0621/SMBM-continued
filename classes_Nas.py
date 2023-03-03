@@ -13,14 +13,10 @@ class Reward:
     def __init__(self, customer):
         self.date = date.today()
         self.used = False
-        self.customer = customer
-        self.deductpoints(customer)
         self.id: int
         self.set_id()
-
-    def deductpoints(self, customer):
-        customer.use_points(self.points)
-        customer.update_db()
+        self.customer = customer
+        customer.claimReward(self)
 
     @property
     def code(self):

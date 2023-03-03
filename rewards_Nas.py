@@ -27,8 +27,8 @@ def redeemRewards():
             for RewardType in Reward.__subclasses__():
                 if RewardType.voucher == request.form['reward']:
                     reward = RewardType(session['userInfo'])
-            session['userInfo'].rewards.append(reward)
-            session['userInfo'].update_db()
+            if not reward:
+                raise ValueError('Reward type not available')
         return render_template('redeemRewards.html', customer=session['userInfo'], reward=Reward)
     return page('Customer', f())
 

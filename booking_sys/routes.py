@@ -240,7 +240,7 @@ def procorder(order, slotinfo):
                     claimed = False
                     for reward in userewards:
                         if str(reward.id) == claim:
-                            user.delReward(reward)
+                            user.useReward(reward)
                             claimed = True
                             break
                     if not claimed:

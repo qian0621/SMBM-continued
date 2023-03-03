@@ -12,6 +12,8 @@ class Booking:
     count: int
     count_storage = "storage/config.json"
     storage = 'storage/bookings'
+    slot_storage = 'storage/slots'
+    points = 3
 
     def __init__(self, day: str, event: str, tickets: dict, requests: str,
                  timeslot: time | tuple[time, time] | None = None,
@@ -33,6 +35,8 @@ class Booking:
             self.name = customer.name
             self.email = customer.email
             self.dbkey = self.name
+            if self.customer.role == 'Customer':
+                self.add_points()
 
         if name:
             self.name = name
@@ -53,12 +57,10 @@ class Booking:
         self.time = timeslot
         self.tickets = tickets
         self.requests = requests
-        print(self.__dict__)
         self.id: int
         self.set_id()
         self.store()
         self.fillupslot()
-        self.add_points()
 
     @property
     def pax(self):
@@ -93,18 +95,15 @@ class Booking:
                 bookings[self.dbkey].append(self)
 
     def add_points(self):
-        if self.customer and self.customer.role == 'Customer':
-            with shelve.open('storage/users', writeback=True) as db:
-                db[self.customer.name].add_points(3)
-                if getattr(session.get('userInfo'), 'name', None) == self.customer.name:
-                    session['userInfo'] = db[self.customer.name]
+        assert self.customer and self.customer.role == 'Customer', 'Points are only avaliable for logged in customers'
+        self.customer.add_points(self.points)
 
     def fillupslot(self):
-        with shelve.open('storage/slots', writeback=True) as slotsDB:
+        with shelve.open(self.slot_storage, writeback=True) as slotsDB:
             slotsDB[self.date].availability[self.time] -= self.pax
 
     def freeupslot(self):
-        with shelve.open('storage/slots', writeback=True) as slotsDB:
+        with shelve.open(self.slot_storage, writeback=True) as slotsDB:
             slotsDB[self.date].availability[self.time] += self.pax
 
     def mail(self):
